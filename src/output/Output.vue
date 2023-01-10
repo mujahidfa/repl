@@ -1,27 +1,27 @@
 <script setup lang="ts">
-import Preview from './Preview.vue'
-import CodeMirror from '../codemirror/CodeMirror.vue'
-import { Store } from '../store'
-import { inject, ref, computed } from 'vue'
-import type { OutputModes } from './types'
+import Preview from "./Preview.vue";
+import CodeMirror from "../codemirror/CodeMirror.vue";
+import { Store } from "../store";
+import { inject, ref, computed } from "vue";
+import type { OutputModes } from "./types";
 
 const props = defineProps<{
-  showCompileOutput?: boolean
-  ssr: boolean
-}>()
+  showCompileOutput?: boolean;
+  ssr: boolean;
+}>();
 
-const store = inject('store') as Store
+const store = inject("store") as Store;
 const modes = computed(() =>
   props.showCompileOutput
-    ? (['preview', 'js', 'css', 'ssr'] as const)
-    : (['preview'] as const)
-)
+    ? (["preview", "js", "css", "ssr"] as const)
+    : (["preview"] as const)
+);
 
 const mode = ref<OutputModes>(
   (modes.value as readonly string[]).includes(store.initialOutputMode)
-    ? store.initialOutputMode as OutputModes
-    : 'preview'
-)
+    ? (store.initialOutputMode as OutputModes)
+    : "preview"
+);
 </script>
 
 <template>

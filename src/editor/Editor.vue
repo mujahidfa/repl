@@ -1,25 +1,25 @@
 <script setup lang="ts">
-import FileSelector from './FileSelector.vue'
-import CodeMirror from '../codemirror/CodeMirror.vue'
-import Message from '../Message.vue'
-import { debounce } from '../utils'
-import { computed, inject } from 'vue'
-import { Store } from '../store'
+import FileSelector from "./FileSelector.vue";
+import CodeMirror from "../codemirror/CodeMirror.vue";
+import Message from "../Message.vue";
+import { debounce } from "../utils";
+import { computed, inject } from "vue";
+import { Store } from "../store";
 
-const store = inject('store') as Store
+const store = inject("store") as Store;
 
 const onChange = debounce((code: string) => {
-  store.state.activeFile.code = code
-}, 250)
+  store.state.activeFile.code = code;
+}, 250);
 
 const activeMode = computed(() => {
-  const { filename } = store.state.activeFile
-  return filename.endsWith('.vue') || filename.endsWith('.html')
-    ? 'htmlmixed'
-    : filename.endsWith('.css')
-    ? 'css'
-    : 'javascript'
-})
+  const { filename } = store.state.activeFile;
+  return filename.endsWith(".vue") || filename.endsWith(".html")
+    ? "htmlmixed"
+    : filename.endsWith(".css")
+    ? "css"
+    : "javascript";
+});
 </script>
 
 <template>

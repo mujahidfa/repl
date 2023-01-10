@@ -1,80 +1,80 @@
 <script setup lang="ts">
-import { Store } from '../store'
-import { computed, inject, ref, VNode, Ref } from 'vue'
+import { Store } from "../store";
+import { computed, inject, ref, VNode, Ref } from "vue";
 
-const store = inject('store') as Store
+const store = inject("store") as Store;
 
-const pending = ref(false)
-const pendingFilename = ref('Comp.vue')
-const importMapFile = 'import-map.json'
-const showImportMap = inject('import-map') as Ref<boolean>
+const pending = ref(false);
+const pendingFilename = ref("Comp.vue");
+const importMapFile = "import-map.json";
+const showImportMap = inject("import-map") as Ref<boolean>;
 const files = computed(() =>
   Object.entries(store.state.files)
     .filter(([name, file]) => name !== importMapFile && !file.hidden)
     .map(([name]) => name)
-)
+);
 
 function startAddFile() {
-  let i = 0
-  let name = `Comp.vue`
+  let i = 0;
+  let name = `Comp.vue`;
 
   while (true) {
-    let hasConflict = false
+    let hasConflict = false;
     for (const file in store.state.files) {
       if (file === name) {
-        hasConflict = true
-        name = `Comp${++i}.vue`
-        break
+        hasConflict = true;
+        name = `Comp${++i}.vue`;
+        break;
       }
     }
     if (!hasConflict) {
-      break
+      break;
     }
   }
 
-  pendingFilename.value = name
-  pending.value = true
+  pendingFilename.value = name;
+  pending.value = true;
 }
 
 function cancelAddFile() {
-  pending.value = false
+  pending.value = false;
 }
 
 function focus({ el }: VNode) {
-  ;(el as HTMLInputElement).focus()
+  (el as HTMLInputElement).focus();
 }
 
 function doneAddFile() {
-  if (!pending.value) return
-  const filename = pendingFilename.value
+  if (!pending.value) return;
+  const filename = pendingFilename.value;
 
   if (!/\.(vue|js|ts|css)$/.test(filename)) {
     store.state.errors = [
-      `Playground only supports *.vue, *.js, *.ts, *.css files.`
-    ]
-    return
+      `Playground only supports *.vue, *.js, *.ts, *.css files.`,
+    ];
+    return;
   }
 
   if (filename in store.state.files) {
-    store.state.errors = [`File "${filename}" already exists.`]
-    return
+    store.state.errors = [`File "${filename}" already exists.`];
+    return;
   }
 
-  store.state.errors = []
-  cancelAddFile()
-  store.addFile(filename)
+  store.state.errors = [];
+  cancelAddFile();
+  store.addFile(filename);
 }
 
-const fileSel = ref(null)
+const fileSel = ref(null);
 function horizontalScroll(e: WheelEvent) {
-  e.preventDefault()
-  const el = fileSel.value! as HTMLElement
+  e.preventDefault();
+  const el = fileSel.value! as HTMLElement;
   const direction =
-    Math.abs(e.deltaX) >= Math.abs(e.deltaY) ? e.deltaX : e.deltaY
-  const distance = 30 * (direction > 0 ? 1 : -1)
+    Math.abs(e.deltaX) >= Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+  const distance = 30 * (direction > 0 ? 1 : -1);
   el.scrollTo({
-    left: el.scrollLeft + distance
-  })
+    left: el.scrollLeft + distance,
+  });
 }
 </script>
 
@@ -92,7 +92,7 @@ function horizontalScroll(e: WheelEvent) {
       @click="store.setActive(file)"
     >
       <span class="label">{{
-        file === importMapFile ? 'Import Map' : file
+        file === importMapFile ? "Import Map" : file
       }}</span>
       <span v-if="i > 0" class="remove" @click.stop="store.deleteFile(file)">
         <svg class="icon" width="12" height="12" viewBox="0 0 24 24">

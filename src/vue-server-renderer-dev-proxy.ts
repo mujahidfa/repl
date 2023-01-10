@@ -1,2 +1,2 @@
 // serve server renderer to the iframe sandbox during dev.
-export * from 'vue/server-renderer'
+export * from "vue/server-renderer";

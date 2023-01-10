@@ -1,48 +1,48 @@
 <script setup lang="ts">
-import { ref, reactive, computed, inject } from 'vue'
-import { Store } from './store'
+import { ref, reactive, computed, inject } from "vue";
+import { Store } from "./store";
 
-const props = defineProps<{ layout?: string }>()
-const isVertical = computed(() => props.layout === 'vertical')
+const props = defineProps<{ layout?: string }>();
+const isVertical = computed(() => props.layout === "vertical");
 
-const container = ref()
+const container = ref();
 
 // mobile only
-const store = inject('store') as Store
-const showOutput = ref(store.initialShowOutput)
+const store = inject("store") as Store;
+const showOutput = ref(store.initialShowOutput);
 
 const state = reactive({
   dragging: false,
-  split: 50
-})
+  split: 50,
+});
 
-const boundSplit = computed(()=>{
-  const { split } = state
-  return split < 20 ? 20 : split > 80 ? 80 : split
-}) 
+const boundSplit = computed(() => {
+  const { split } = state;
+  return split < 20 ? 20 : split > 80 ? 80 : split;
+});
 
-let startPosition = 0
-let startSplit = 0
+let startPosition = 0;
+let startSplit = 0;
 
 function dragStart(e: MouseEvent) {
-  state.dragging = true
-  startPosition = isVertical.value ? e.pageY : e.pageX
-  startSplit = boundSplit.value
+  state.dragging = true;
+  startPosition = isVertical.value ? e.pageY : e.pageX;
+  startSplit = boundSplit.value;
 }
 
 function dragMove(e: MouseEvent) {
   if (state.dragging) {
-    const position = isVertical.value ? e.pageY : e.pageX
+    const position = isVertical.value ? e.pageY : e.pageX;
     const totalSize = isVertical.value
       ? container.value.offsetHeight
-      : container.value.offsetWidth
-    const dp = position - startPosition
-    state.split = startSplit + ~~((dp / totalSize) * 100)
+      : container.value.offsetWidth;
+    const dp = position - startPosition;
+    state.split = startSplit + ~~((dp / totalSize) * 100);
   }
 }
 
 function dragEnd() {
-  state.dragging = false
+  state.dragging = false;
 }
 </script>
 
@@ -53,7 +53,7 @@ function dragEnd() {
     :class="{
       dragging: state.dragging,
       'show-output': showOutput,
-      vertical: isVertical
+      vertical: isVertical,
     }"
     @mousemove="dragMove"
     @mouseup="dragEnd"
@@ -74,7 +74,7 @@ function dragEnd() {
     </div>
 
     <button class="toggler" @click="showOutput = !showOutput">
-      {{ showOutput ? '< Code' : 'Output >' }}
+      {{ showOutput ? "< Code" : "Output >" }}
     </button>
   </div>
 </template>

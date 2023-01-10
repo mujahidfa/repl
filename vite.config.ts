@@ -1,30 +1,30 @@
-import { defineConfig, Plugin } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import { defineConfig, Plugin } from "vite";
+import vue from "@vitejs/plugin-vue";
 
 const genStub: Plugin = {
-  name: 'gen-stub',
-  apply: 'build',
+  name: "gen-stub",
+  apply: "build",
   generateBundle() {
     this.emitFile({
-      type: 'asset',
-      fileName: 'ssr-stub.js',
-      source: `module.exports = {}`
-    })
-  }
-}
+      type: "asset",
+      fileName: "ssr-stub.js",
+      source: `module.exports = {}`,
+    });
+  },
+};
 
 export default defineConfig({
   plugins: [vue(), genStub],
   build: {
-    target: 'esnext',
+    target: "esnext",
     minify: false,
     lib: {
-      entry: './src/index.ts',
-      formats: ['es'],
-      fileName: () => 'vue-repl.js'
+      entry: "./src/index.ts",
+      formats: ["es"],
+      fileName: () => "vue-repl.js",
     },
     rollupOptions: {
-      external: ['vue', 'vue/compiler-sfc']
-    }
-  }
-})
+      external: ["vue", "vue/compiler-sfc"],
+    },
+  },
+});

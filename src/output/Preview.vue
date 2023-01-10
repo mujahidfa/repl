@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Message from '../Message.vue'
+import Message from "../Message.vue";
 import {
   ref,
   onMounted,
@@ -8,89 +8,89 @@ import {
   watch,
   WatchStopHandle,
   inject,
-  Ref
-} from 'vue'
-import srcdoc from './srcdoc.html?raw'
-import { PreviewProxy } from './PreviewProxy'
-import { compileModulesForPreview } from './moduleCompiler'
-import { Store } from '../store'
+  Ref,
+} from "vue";
+import srcdoc from "./srcdoc.html?raw";
+import { PreviewProxy } from "./PreviewProxy";
+import { compileModulesForPreview } from "./moduleCompiler";
+import { Store } from "../store";
 
-const props = defineProps<{ show: boolean; ssr: boolean }>()
+const props = defineProps<{ show: boolean; ssr: boolean }>();
 
-const store = inject('store') as Store
-const clearConsole = inject('clear-console') as Ref<boolean>
-const container = ref()
-const runtimeError = ref()
-const runtimeWarning = ref()
+const store = inject("store") as Store;
+const clearConsole = inject("clear-console") as Ref<boolean>;
+const container = ref();
+const runtimeError = ref();
+const runtimeWarning = ref();
 
-let sandbox: HTMLIFrameElement
-let proxy: PreviewProxy
-let stopUpdateWatcher: WatchStopHandle | undefined
+let sandbox: HTMLIFrameElement;
+let proxy: PreviewProxy;
+let stopUpdateWatcher: WatchStopHandle | undefined;
 
 // create sandbox on mount
-onMounted(createSandbox)
+onMounted(createSandbox);
 
 // reset sandbox when import map changes
 watch(
-  () => store.state.files['import-map.json'].code,
+  () => store.state.files["import-map.json"].code,
   (raw) => {
     try {
-      const map = JSON.parse(raw)
+      const map = JSON.parse(raw);
       if (!map.imports) {
-        store.state.errors = [`import-map.json is missing "imports" field.`]
-        return
+        store.state.errors = [`import-map.json is missing "imports" field.`];
+        return;
       }
-      createSandbox()
+      createSandbox();
     } catch (e: any) {
-      store.state.errors = [e as Error]
-      return
+      store.state.errors = [e as Error];
+      return;
     }
   }
-)
+);
 
 // reset sandbox when version changes
-watch(() => store.state.resetFlip, createSandbox)
+watch(() => store.state.resetFlip, createSandbox);
 
 onUnmounted(() => {
-  proxy.destroy()
-  stopUpdateWatcher && stopUpdateWatcher()
-})
+  proxy.destroy();
+  stopUpdateWatcher && stopUpdateWatcher();
+});
 
 function createSandbox() {
   if (sandbox) {
     // clear prev sandbox
-    proxy.destroy()
-    stopUpdateWatcher && stopUpdateWatcher()
-    container.value.removeChild(sandbox)
+    proxy.destroy();
+    stopUpdateWatcher && stopUpdateWatcher();
+    container.value.removeChild(sandbox);
   }
 
-  sandbox = document.createElement('iframe')
+  sandbox = document.createElement("iframe");
   sandbox.setAttribute(
-    'sandbox',
+    "sandbox",
     [
-      'allow-forms',
-      'allow-modals',
-      'allow-pointer-lock',
-      'allow-popups',
-      'allow-same-origin',
-      'allow-scripts',
-      'allow-top-navigation-by-user-activation'
-    ].join(' ')
-  )
+      "allow-forms",
+      "allow-modals",
+      "allow-pointer-lock",
+      "allow-popups",
+      "allow-same-origin",
+      "allow-scripts",
+      "allow-top-navigation-by-user-activation",
+    ].join(" ")
+  );
 
-  const importMap = store.getImportMap()
+  const importMap = store.getImportMap();
   if (!importMap.imports) {
-    importMap.imports = {}
+    importMap.imports = {};
   }
   if (!importMap.imports.vue) {
-    importMap.imports.vue = store.state.vueRuntimeURL
+    importMap.imports.vue = store.state.vueRuntimeURL;
   }
   const sandboxSrc = srcdoc.replace(
     /<!--IMPORT_MAP-->/,
     JSON.stringify(importMap)
-  )
-  sandbox.srcdoc = sandboxSrc
-  container.value.appendChild(sandbox)
+  );
+  sandbox.srcdoc = sandboxSrc;
+  container.value.appendChild(sandbox);
 
   proxy = new PreviewProxy(sandbox, {
     on_fetch_progress: (progress: any) => {
@@ -98,41 +98,41 @@ function createSandbox() {
     },
     on_error: (event: any) => {
       const msg =
-        event.value instanceof Error ? event.value.message : event.value
+        event.value instanceof Error ? event.value.message : event.value;
       if (
-        msg.includes('Failed to resolve module specifier') ||
-        msg.includes('Error resolving module specifier')
+        msg.includes("Failed to resolve module specifier") ||
+        msg.includes("Error resolving module specifier")
       ) {
         runtimeError.value =
-          msg.replace(/\. Relative references must.*$/, '') +
-          `.\nTip: edit the "Import Map" tab to specify import paths for dependencies.`
+          msg.replace(/\. Relative references must.*$/, "") +
+          `.\nTip: edit the "Import Map" tab to specify import paths for dependencies.`;
       } else {
-        runtimeError.value = event.value
+        runtimeError.value = event.value;
       }
     },
     on_unhandled_rejection: (event: any) => {
-      let error = event.value
-      if (typeof error === 'string') {
-        error = { message: error }
+      let error = event.value;
+      if (typeof error === "string") {
+        error = { message: error };
       }
-      runtimeError.value = 'Uncaught (in promise): ' + error.message
+      runtimeError.value = "Uncaught (in promise): " + error.message;
     },
     on_console: (log: any) => {
       if (log.duplicate) {
-        return
+        return;
       }
-      if (log.level === 'error') {
+      if (log.level === "error") {
         if (log.args[0] instanceof Error) {
-          runtimeError.value = log.args[0].message
+          runtimeError.value = log.args[0].message;
         } else {
-          runtimeError.value = log.args[0]
+          runtimeError.value = log.args[0];
         }
-      } else if (log.level === 'warn') {
-        if (log.args[0].toString().includes('[Vue warn]')) {
+      } else if (log.level === "warn") {
+        if (log.args[0].toString().includes("[Vue warn]")) {
           runtimeWarning.value = log.args
-            .join('')
-            .replace(/\[Vue warn\]:/, '')
-            .trim()
+            .join("")
+            .replace(/\[Vue warn\]:/, "")
+            .trim();
         }
       }
     },
@@ -144,43 +144,43 @@ function createSandbox() {
     },
     on_console_group_collapsed: (action: any) => {
       // group_logs(action.label, true);
-    }
-  })
+    },
+  });
 
-  sandbox.addEventListener('load', () => {
-    proxy.handle_links()
-    stopUpdateWatcher = watchEffect(updatePreview)
-  })
+  sandbox.addEventListener("load", () => {
+    proxy.handle_links();
+    stopUpdateWatcher = watchEffect(updatePreview);
+  });
 }
 
 async function updatePreview() {
   if (import.meta.env.PROD && clearConsole.value) {
-    console.clear()
+    console.clear();
   }
-  runtimeError.value = null
-  runtimeWarning.value = null
+  runtimeError.value = null;
+  runtimeWarning.value = null;
 
-  let isSSR = props.ssr
+  let isSSR = props.ssr;
   if (store.vueVersion) {
-    const [_, minor, patch] = store.vueVersion.split('.')
+    const [_, minor, patch] = store.vueVersion.split(".");
     if (parseInt(minor, 10) < 2 || parseInt(patch, 10) < 27) {
       alert(
         `The selected version of Vue (${store.vueVersion}) does not support in-browser SSR.` +
           ` Rendering in client mode instead.`
-      )
-      isSSR = false
+      );
+      isSSR = false;
     }
   }
 
   try {
-    const mainFile = store.state.mainFile
+    const mainFile = store.state.mainFile;
 
     // if SSR, generate the SSR bundle and eval it to render the HTML
-    if (isSSR && mainFile.endsWith('.vue')) {
-      const ssrModules = compileModulesForPreview(store, true)
+    if (isSSR && mainFile.endsWith(".vue")) {
+      const ssrModules = compileModulesForPreview(store, true);
       console.log(
         `[@vue/repl] successfully compiled ${ssrModules.length} modules for SSR.`
-      )
+      );
       await proxy.eval([
         `const __modules__ = {};`,
         ...ssrModules,
@@ -196,28 +196,28 @@ async function updatePreview() {
          }).catch(err => {
            console.error("SSR Error", err)
          })
-        `
-      ])
+        `,
+      ]);
     }
 
     // compile code to simulated module system
-    const modules = compileModulesForPreview(store)
+    const modules = compileModulesForPreview(store);
     console.log(
       `[@vue/repl] successfully compiled ${modules.length} module${
         modules.length > 1 ? `s` : ``
       }.`
-    )
+    );
 
     const codeToEval = [
       `window.__modules__ = {}\nwindow.__css__ = ''\n` +
         `if (window.__app__) window.__app__.unmount()\n` +
         (isSSR ? `` : `document.body.innerHTML = '<div id="app"></div>'`),
       ...modules,
-      `document.getElementById('__sfc-styles').innerHTML = window.__css__`
-    ]
+      `document.getElementById('__sfc-styles').innerHTML = window.__css__`,
+    ];
 
     // if main file is a vue file, mount it.
-    if (mainFile.endsWith('.vue')) {
+    if (mainFile.endsWith(".vue")) {
       codeToEval.push(
         `import { ${
           isSSR ? `createSSRApp` : `createApp`
@@ -235,13 +235,13 @@ async function updatePreview() {
         } else {
           _mount()
         }`
-      )
+      );
     }
 
     // eval code in sandbox
-    await proxy.eval(codeToEval)
+    await proxy.eval(codeToEval);
   } catch (e: any) {
-    runtimeError.value = (e as Error).message
+    runtimeError.value = (e as Error).message;
   }
 }
 </script>
