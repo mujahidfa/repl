@@ -210,6 +210,8 @@ export class ReplStore implements Store {
           {
             imports: {
               vue: this.defaultVueRuntimeURL,
+              "vue-boring-avatars":
+                "https://unpkg.com/vue-boring-avatars/dist/vue-boring-avatars.js",
             },
           },
           null,

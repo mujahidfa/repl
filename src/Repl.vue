@@ -8,7 +8,6 @@ import { provide, toRef } from "vue";
 export interface Props {
   store?: Store;
   autoResize?: boolean;
-  showCompileOutput?: boolean;
   showImportMap?: boolean;
   clearConsole?: boolean;
   sfcOptions?: SFCOptions;
@@ -19,7 +18,6 @@ export interface Props {
 const props = withDefaults(defineProps<Props>(), {
   store: () => new ReplStore(),
   autoResize: true,
-  showCompileOutput: true,
   showImportMap: true,
   clearConsole: true,
   ssr: false,
@@ -37,14 +35,11 @@ provide("clear-console", toRef(props, "clearConsole"));
 <template>
   <div class="vue-repl">
     <SplitPane :layout="layout">
-      <template #left>
-        <Editor />
+      <template #top>
+        <Output :ssr="!!props.ssr" />
       </template>
-      <template #right>
-        <Output
-          :showCompileOutput="props.showCompileOutput"
-          :ssr="!!props.ssr"
-        />
+      <template #bottom>
+        <Editor />
       </template>
     </SplitPane>
   </div>

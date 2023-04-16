@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { Store } from "../store";
-import { computed, inject, ref, VNode, Ref } from "vue";
+import { computed, inject, ref, VNode } from "vue";
 
 const store = inject("store") as Store;
 
 const pending = ref(false);
 const pendingFilename = ref("Comp.vue");
 const importMapFile = "import-map.json";
-const showImportMap = inject("import-map") as Ref<boolean>;
+// const showImportMap = inject("import-map") as Ref<boolean>;
 const files = computed(() =>
   Object.entries(store.state.files)
     .filter(([name, file]) => name !== importMapFile && !file.hidden)
@@ -79,21 +79,15 @@ function horizontalScroll(e: WheelEvent) {
 </script>
 
 <template>
-  <div
-    class="file-selector"
-    :class="{ 'has-import-map': showImportMap }"
-    @wheel="horizontalScroll"
-    ref="fileSel"
-  >
+  <div class="file-selector" @wheel="horizontalScroll" ref="fileSel">
+    <!-- :class="{ 'has-import-map': showImportMap }" -->
     <div
       v-for="(file, i) in files"
       class="file"
       :class="{ active: store.state.activeFile.filename === file }"
       @click="store.setActive(file)"
     >
-      <span class="label">{{
-        file === importMapFile ? "Import Map" : file
-      }}</span>
+      <span class="label">{{ file }}</span>
       <span v-if="i > 0" class="remove" @click.stop="store.deleteFile(file)">
         <svg class="icon" width="12" height="12" viewBox="0 0 24 24">
           <line stroke="#999" x1="18" y1="6" x2="6" y2="18"></line>
@@ -113,7 +107,7 @@ function horizontalScroll(e: WheelEvent) {
     </div>
     <button class="add" @click="startAddFile">+</button>
 
-    <div v-if="showImportMap" class="import-map-wrapper">
+    <!-- <div v-if="showImportMap" class="import-map-wrapper">
       <div
         class="file import-map"
         :class="{ active: store.state.activeFile.filename === importMapFile }"
@@ -121,7 +115,7 @@ function horizontalScroll(e: WheelEvent) {
       >
         <span class="label">Import Map</span>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -207,7 +201,7 @@ function horizontalScroll(e: WheelEvent) {
 .icon {
   margin-top: -1px;
 }
-.import-map-wrapper {
+/* .import-map-wrapper {
   position: sticky;
   margin-left: auto;
   top: 0;
@@ -226,5 +220,5 @@ function horizontalScroll(e: WheelEvent) {
     rgba(26, 26, 26, 0) 0%,
     rgba(26, 26, 26, 1) 25%
   );
-}
+} */
 </style>

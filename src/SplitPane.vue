@@ -60,56 +60,62 @@ function dragEnd() {
     @mouseleave="dragEnd"
   >
     <div
-      class="left"
-      :style="{ [isVertical ? 'height' : 'width']: boundSplit + '%' }"
+      class="top"
+      :style="{ [isVertical ? 'height' : 'width']: 100 - boundSplit + '%' }"
     >
-      <slot name="left" />
+      <slot name="top" />
       <div class="dragger" @mousedown.prevent="dragStart" />
     </div>
     <div
-      class="right"
-      :style="{ [isVertical ? 'height' : 'width']: 100 - boundSplit + '%' }"
+      class="bottom"
+      :style="{ [isVertical ? 'height' : 'width']: boundSplit + '%' }"
     >
-      <slot name="right" />
+      <slot name="bottom" />
     </div>
 
-    <button class="toggler" @click="showOutput = !showOutput">
+    <!-- <button class="toggler" @click="showOutput = !showOutput">
       {{ showOutput ? "< Code" : "Output >" }}
-    </button>
+    </button> -->
   </div>
 </template>
 
 <style scoped>
 .split-pane {
   display: flex;
+  flex-direction: column;
   height: 100%;
+  /* width: 100%; */
   position: relative;
 }
 .split-pane.dragging {
-  cursor: ew-resize;
+  cursor: ns-resize;
 }
-.dragging .left,
-.dragging .right {
+.dragging .bottom,
+.dragging .top {
   pointer-events: none;
 }
-.left,
-.right {
+.bottom,
+.top {
   position: relative;
   height: 100%;
 }
-.left {
+.bottom {
   border-right: 1px solid var(--border);
 }
 .dragger {
   position: absolute;
   z-index: 3;
-  top: 0;
+  /* top: 0;
   bottom: 0;
-  right: -5px;
-  width: 10px;
-  cursor: ew-resize;
+  right: -5px; */
+  top: 0;
+  bottom: -5px;
+  right: 0;
+  /* width: 10px; */
+  width: 100%;
+  cursor: ns-resize;
 }
-.toggler {
+/* .toggler {
   display: none;
   z-index: 3;
   font-family: var(--font-code);
@@ -126,7 +132,7 @@ function dragEnd() {
 
 .dark .toggler {
   background-color: var(--bg);
-}
+} */
 
 /* vertical */
 @media (min-width: 721px) {
@@ -148,20 +154,20 @@ function dragEnd() {
     cursor: ns-resize;
   }
 
-  .vertical .left,
-  .vertical .right {
+  .vertical .bottom,
+  .vertical .top {
     width: 100%;
   }
-  .vertical .left {
+  .vertical .bottom {
     border-right: none;
     border-bottom: 1px solid var(--border);
   }
 }
 
 /* mobile */
-@media (max-width: 720px) {
-  .left,
-  .right {
+/* @media (max-width: 720px) {
+  .bottom,
+  .top {
     width: 100% !important;
     height: 100% !important;
   }
@@ -171,14 +177,14 @@ function dragEnd() {
   .split-pane .toggler {
     display: block;
   }
-  .split-pane .right {
+  .split-pane .top {
     display: none;
   }
-  .split-pane.show-output .right {
+  .split-pane.show-output .top {
     display: block;
   }
-  .split-pane.show-output .left {
+  .split-pane.show-output .bottom {
     display: none;
   }
-}
+} */
 </style>

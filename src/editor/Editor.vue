@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import FileSelector from "./FileSelector.vue";
+// import FileSelector from "./FileSelector.vue";
 import CodeMirror from "../codemirror/CodeMirror.vue";
 import Message from "../Message.vue";
 import { debounce } from "../utils";
@@ -23,7 +23,7 @@ const activeMode = computed(() => {
 </script>
 
 <template>
-  <FileSelector />
+  <!-- <FileSelector /> -->
   <div class="editor-container">
     <CodeMirror
       @change="onChange"
@@ -36,7 +36,7 @@ const activeMode = computed(() => {
 
 <style scoped>
 .editor-container {
-  height: calc(100% - var(--header-height));
+  /* height: calc(100% - var(--header-height)); */
   overflow: hidden;
   position: relative;
 }

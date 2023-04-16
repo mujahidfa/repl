@@ -25,21 +25,23 @@ const el = ref();
 const needAutoResize = inject("autoresize");
 
 onMounted(() => {
-  const addonOptions = {
-    autoCloseBrackets: true,
-    autoCloseTags: true,
-    foldGutter: true,
-    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-  };
+  // const addonOptions = {
+  //   autoCloseBrackets: true,
+  //   autoCloseTags: true,
+  //   foldGutter: true,
+  //   gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+  // };
 
   const editor = CodeMirror(el.value!, {
     value: "",
     mode: props.mode,
     readOnly: props.readonly,
     tabSize: 2,
-    lineWrapping: true,
-    lineNumbers: true,
-    ...addonOptions,
+    autoCloseBrackets: true,
+    autoCloseTags: true,
+    // lineWrapping: false,
+    // lineNumbers: false,
+    // ...addonOptions,
   });
 
   editor.on("change", () => {
